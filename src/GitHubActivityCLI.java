@@ -1,9 +1,11 @@
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.http.HttpClient;
 
 public class GitHubActivityCLI {
     public static void main(String[] args) {
@@ -19,8 +21,13 @@ public class GitHubActivityCLI {
 
     }
 
+    public static String interpretEvent (JSONObject event) {
+        String type = event.getString("type");
+        return null;
+    }
+
     //Change for HttpClient when finish
-    private static void fetchGitHubActivity(String username) throws Exception {
+    private static JSONArray fetchGitHubActivity(final String username) throws Exception {
         HttpURLConnection connection = null;
         BufferedReader reader = null;
 
@@ -35,16 +42,22 @@ public class GitHubActivityCLI {
 
             int responseCode = connection.getResponseCode();
 
-            if (responseCode == 200) {
-                reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                StringBuilder response = new StringBuilder();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    response.append(line);
-                }
-            } else {
+            if (responseCode != 200) {
                 throw new Exception("Failed to fetch data. HTTP response code: " + responseCode);
+
             }
+
+            reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            StringBuilder response = new StringBuilder();
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
+            }
+
+            return new JSONArray(response.toString());
+
+
 
         } catch (MalformedURLException e) {
             throw new Exception("Malformed URL" + e.getMessage());
