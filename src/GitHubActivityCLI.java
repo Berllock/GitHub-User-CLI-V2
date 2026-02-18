@@ -23,6 +23,16 @@ public class GitHubActivityCLI {
 
     public static String interpretEvent (JSONObject event) {
         String type = event.getString("type");
+        String repo = event.getJSONObject("repo").getString("name");
+        JSONObject payload = event.getJSONObject("payload");
+
+        switch (type) {
+            case "PushEvent":
+                int commits = payload.getJSONArray("commits").length();
+                return "Send " + commits + " commit(s) to " + repo;
+
+        }
+
         return null;
     }
 
@@ -54,10 +64,7 @@ public class GitHubActivityCLI {
             while ((line = reader.readLine()) != null) {
                 response.append(line);
             }
-
             return new JSONArray(response.toString());
-
-
 
         } catch (MalformedURLException e) {
             throw new Exception("Malformed URL" + e.getMessage());
