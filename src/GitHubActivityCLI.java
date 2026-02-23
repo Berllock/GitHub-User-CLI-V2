@@ -31,9 +31,29 @@ public class GitHubActivityCLI {
                 int commits = payload.getJSONArray("commits").length();
                 return "Send " + commits + " commit(s) to " + repo;
 
-        }
+            case "PullRequestEvent":
+                String prAction = payload.getString("action");
+                return prAction.substring(0, 1).toUpperCase() + prAction.substring(1);
 
-        return null;
+            case "IssuesEvent":
+                String action = payload.getString("action");
+                return action.substring(0, 1).toUpperCase() + action.substring(1) + " issue on " + repo;
+
+            case "WatchEvent":
+                return "Message " + repo;
+
+            case "CreateEvent":
+                return "Created" + payload.getString("ref_type") + " from " + repo;
+
+            case "DeleteEvent":
+                return "Deleted" + payload.getString("ref_type") + " from " + repo;
+
+            case "ForkEvent":
+                return "Forked " + payload.getString("ref_type") + " from " + repo;
+
+            default:
+                return "Performed " + type + " on " + repo;
+        }
     }
 
     //Change for HttpClient when finish
